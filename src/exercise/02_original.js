@@ -5,17 +5,9 @@ import * as React from 'react'
 
 function Greeting({initialName = ''}) {
 
-  // interessante : if the operation that fills in the initial state is very intense, we can use a function 
-  //that is only going to be called the first time the component is rendered.
-  // In this case, reading from local storage can take some time, and we only need if for the first time, so 
-  // it makes sense to use lazy loading of the initial state.
-  const getInitialValueIfSet = () => { 
-    console.log("Calling the lazy loading of the initial state");
-    return window.localStorage.getItem("storedName") ?? initialName;
-   };
-
-
-  const [name, setName] = React.useState(getInitialValueIfSet)
+  // interessante : using local storage to save the name between refreshes.
+  const storedName = window.localStorage.getItem("storedName");
+  const [name, setName] = React.useState(storedName ?? initialName)
 
   React.useEffect(() => { 
 
