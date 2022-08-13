@@ -3,7 +3,6 @@
 
 import * as React from 'react'
 
-
 const useLocalStorageState = (key) => { 
 
   const getValueIfSet = (defaultValue = "") => { 
@@ -19,8 +18,6 @@ const useLocalStorageState = (key) => {
     getValueIfSet
   };
  };
-
-
 
 function Greeting({initialName = ''}) {
 
