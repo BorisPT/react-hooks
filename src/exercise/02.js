@@ -45,9 +45,16 @@ const useLocalStorageState = (key, initialValue = "") => {
  };  
 
  const [name, setName] = useLocalStorageState("storedName", initialName);
+ const [myObject, setMyObject] = useLocalStorageState("myObject", {});
 
  function handleChange(event) {
   setName(event.target.value);
+  
+  setMyObject({
+    id : Math.random().toString(),
+    numero : Date.now(),
+    mybool : true
+  });
 }
 
   return (
@@ -57,6 +64,8 @@ const useLocalStorageState = (key, initialValue = "") => {
         <input value={name} onChange={handleChange} id="name" />
       </form>
       {name ? <strong>Hello {name}</strong> : 'Please type your name'}
+      <br/>
+      {myObject ? <strong>MyObject {JSON.stringify(myObject)}</strong> : 'Please insert an object'}
     </div>
   )
 }
