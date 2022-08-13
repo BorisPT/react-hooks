@@ -9,7 +9,12 @@ const useLocalStorageState = (key, initialValue = "") => {
 
   const setToLocalStorage = React.useCallback((valueToInsert) => { 
 
-    window.localStorage.setItem(key, JSON.stringify(valueToInsert));
+    const toInsert = {
+      type : typeof valueToInsert,
+      value : typeof valueToInsert === "object" ? JSON.stringify(valueToInsert) : valueToInsert
+    };      
+
+    window.localStorage.setItem(key, JSON.stringify(toInsert));
 }, [key]);
 
   const getFromLocalStorageOrDefault = (defaultValue) => { 
@@ -22,7 +27,9 @@ const useLocalStorageState = (key, initialValue = "") => {
       return defaultValue;
     }
 
-    return rawValue = JSON.parse(rawValue);    
+    rawValue = JSON.parse(rawValue);
+
+    return rawValue.type === "object" ? JSON.parse(rawValue.value) : rawValue.value;
    };
 
   const [value, setValue] = React.useState(getFromLocalStorageOrDefault(initialValue));
