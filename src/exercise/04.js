@@ -119,7 +119,14 @@ function Game() {
    };
 
    const setCurrentStep = (index) => { 
+
     setStep(index);
+
+    setGameHistory((currentHistory) => { 
+      const newHistory = currentHistory.slice(0, index + 1);      
+      return newHistory;    
+     });
+            
     };
 
 
