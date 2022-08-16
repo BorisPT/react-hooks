@@ -4,42 +4,9 @@
 import * as React from 'react'
 
 function Board() {
+  // 🐨 squares is the state for this component. Add useState for squares
 
-  const useLocalStorageState = (key, initialValue = "") => { 
-
-    const setToLocalStorage = React.useCallback((valueToInsert) => { 
-  
-      window.localStorage.setItem(key, JSON.stringify(valueToInsert));
-  }, [key]);
-  
-    const getFromLocalStorageOrDefault = (defaultValue) => { 
-  
-      let rawValue = window.localStorage.getItem(key);
-  
-      if (!rawValue)
-      {
-        setToLocalStorage(defaultValue);
-        return defaultValue;
-      }
-  
-      return rawValue = JSON.parse(rawValue);    
-     };
-  
-    const [value, setValue] = React.useState(getFromLocalStorageOrDefault(initialValue));
-  
-    React.useEffect(() => { 
-  
-      setToLocalStorage(value);
-        
-     }, [setToLocalStorage, value]);
-  
-     return [value,setValue]
-  
-   };  
-  
-
-
-  const[squares, setSquares] = useLocalStorageState("tictactoe", Array(9).fill(null));  
+  const[squares, setSquares] = React.useState(Array(9).fill(null));  
   const [nextPlayer, setNextPlayer] = React.useState(() => calculateNextValue(squares));
   let [winner, setWinner] = React.useState(calculateWinner(squares));  
   let [status, setStatus] = React.useState(calculateStatus(winner, squares, nextPlayer));
@@ -75,8 +42,6 @@ function Board() {
     const gotWinner = calculateWinner(newSquares);
     setWinner(gotWinner);
     setStatus(calculateStatus(gotWinner, newSquares, next));
-
-    window.localStorage.setItem("tictactoe", JSON.stringify(newSquares));
   }
 
   function restart() {
@@ -88,7 +53,6 @@ function Board() {
     setNextPlayer(next);
         
     setStatus(calculateStatus(null, newSquares, next));
-    window.localStorage.removeItem("tictactoe");
   }
 
   function renderSquare(i) {
