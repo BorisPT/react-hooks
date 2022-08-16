@@ -2,7 +2,7 @@
 // http://localhost:3000/isolated/exercise/04.js
 
 import * as React from 'react'
-import {useLocalStorageState} from "../utils";
+// import {useLocalStorageState} from "../utils";
 
 function Board({squares, setSquares}) {
    
@@ -24,8 +24,9 @@ function Board({squares, setSquares}) {
       return;
     }
     
-    squares[square] = nextPlayer;
-    setSquares(squares);
+    const newSquares = [...squares];
+    newSquares[square] = nextPlayer;
+    setSquares(newSquares);
   }
 
   function renderSquare(i) {
@@ -59,7 +60,11 @@ function Board({squares, setSquares}) {
   )
 }
 
-function History({total, currentStep}) {
+function History({total, currentStep, setIndex}) {
+
+  const handleOnClick = (index) => { 
+    setIndex(index);
+   };
 
   const moves = [];
   for(let i = 0; i < total; i++)
@@ -68,7 +73,11 @@ function History({total, currentStep}) {
     const currentMove = i === currentStep ? "(current)" : "";
 
     const stepName = `Go to ${destination} ${currentMove}`;
-    moves.push(<li><button disabled={i === currentStep}>{stepName}</button></li>);
+    moves.push(<li key={Math.random().toString()}>
+      <button disabled={i === currentStep} onClick={handleOnClick.bind(null, i)}>
+        {stepName}
+      </button>
+      </li>);
   }
 
   return (
@@ -79,35 +88,40 @@ function History({total, currentStep}) {
 }
 
 function Game() {
+  
+  //const initialState = Array(9).fill(null);
 
-  // const[squares, setSquares] = useLocalStorageState("tictactoe", Array(9).fill(null));
-  const initialState = Array(9).fill(null);
-
-  const[history, setHistory] = useLocalStorageState("ticTacToeHistory", [initialState]);
-  const[step, setStep] = useLocalStorageState("ticTacToeStep", 0);
+  const[gameHistory, setGameHistory] = React.useState([Array(9).fill(null)]);
+  const[step, setStep] = React.useState(0);
 
   function restart() {    
-    const resetHistory = [initialState];
-    setHistory(resetHistory);
+    const resetHistory = [Array(9).fill(null)];
+    setGameHistory(resetHistory);
     setStep(0);
   }
 
+  console.log("Game history (main): ", gameHistory);
+
   const setSquares = (squares) => { 
-    
-    const newHistory = [...history];
+
+    console.log("Game history (setSquares): ", gameHistory);
+        
     const newSquares = [...squares];
 
-    newHistory.push(newSquares);
-    setHistory(newHistory);
+    const newGameHistory = [...gameHistory, newSquares];
+    // newGameHistory.push(newSquares);
+
+    setGameHistory(newGameHistory);
     
-    setStep((currentStep) => { 
-      return currentStep + 1;    
-     });
+    setStep(step+1);
    };
 
+   const setCurrentStep = (index) => { 
+    setStep(index);
+    };
 
 
-  const squares = history[step];     
+  const squares = gameHistory[step];     
   
   return (
     <React.Fragment>
@@ -119,7 +133,7 @@ function Game() {
           </button>
         </div>
         <div>
-          <History total={history.length} currentStep={step} />
+          <History total={gameHistory.length} currentStep={step} setIndex={setCurrentStep} />
         </div>
       </div>
     </React.Fragment>
@@ -133,7 +147,7 @@ function calculateStatus(winner, squares, nextPlayer) {
   const returnStatus = squares.every(position => position !== null)
     ? `Scratch: Cat's game`
     : `Next player: ${nextPlayer}`
-  console.log('Return status:', returnStatus)
+  
   return returnStatus
 }
 
@@ -141,7 +155,7 @@ function calculateStatus(winner, squares, nextPlayer) {
 function calculateNextValue(squares) {
   const countX = squares.filter(square => square === "X").length;
   const countO = squares.filter(square => square === "O").length;
-  console.log("X Count, O count:", countX, countO);
+  
   if (countX === 0)
     return "X";
 
