@@ -2,47 +2,15 @@
 // http://localhost:3000/isolated/exercise/04.js
 
 import * as React from 'react'
+import {useLocalStorageState} from "../utils";
 
 function Board() {
 
-  const useLocalStorageState = (key, initialValue = "") => { 
-
-    const setToLocalStorage = React.useCallback((valueToInsert) => { 
-  
-      window.localStorage.setItem(key, JSON.stringify(valueToInsert));
-  }, [key]);
-  
-    const getFromLocalStorageOrDefault = (defaultValue) => { 
-  
-      let rawValue = window.localStorage.getItem(key);
-  
-      if (!rawValue)
-      {
-        setToLocalStorage(defaultValue);
-        return defaultValue;
-      }
-  
-      return rawValue = JSON.parse(rawValue);    
-     };
-  
-    const [value, setValue] = React.useState(getFromLocalStorageOrDefault(initialValue));
-  
-    React.useEffect(() => { 
-  
-      setToLocalStorage(value);
-        
-     }, [setToLocalStorage, value]);
-  
-     return [value,setValue]
-  
-   };  
-  
-
-
   const[squares, setSquares] = useLocalStorageState("tictactoe", Array(9).fill(null));  
-  const [nextPlayer, setNextPlayer] = React.useState(() => calculateNextValue(squares));
-  let [winner, setWinner] = React.useState(calculateWinner(squares));  
-  let [status, setStatus] = React.useState(calculateStatus(winner, squares, nextPlayer));
+  
+  const nextPlayer = calculateNextValue(squares);
+  const winner = calculateWinner(squares);  
+  const status = calculateStatus(winner, squares, nextPlayer);
 
   // 🐨 We'll need the following bits of derived state:
   // - nextValue ('X' or 'O')
@@ -68,27 +36,11 @@ function Board() {
     const newSquares = [...squares];
     newSquares[square] = nextPlayer;
     setSquares(newSquares);
-
-    const next = calculateNextValue(newSquares);
-    setNextPlayer(next);
-
-    const gotWinner = calculateWinner(newSquares);
-    setWinner(gotWinner);
-    setStatus(calculateStatus(gotWinner, newSquares, next));
-
-    window.localStorage.setItem("tictactoe", JSON.stringify(newSquares));
   }
 
   function restart() {
     const newSquares = Array(9).fill(null);
     setSquares(newSquares);
-    setWinner(null);
-
-    const next = calculateNextValue(newSquares);
-    setNextPlayer(next);
-        
-    setStatus(calculateStatus(null, newSquares, next));
-    window.localStorage.removeItem("tictactoe");
   }
 
   function renderSquare(i) {

@@ -21,13 +21,6 @@ function Board() {
   let [winner, setWinner] = React.useState(calculateWinner(squares));  
   let [status, setStatus] = React.useState(calculateStatus(winner, squares, nextPlayer));
 
-  // 🐨 We'll need the following bits of derived state:
-  // - nextValue ('X' or 'O')
-  // - winner ('X', 'O', or null)
-  // - status (`Winner: ${winner}`, `Scratch: Cat's game`, or `Next player: ${nextValue}`)
-
-  // This is the function your square click handler will call. `square` should
-  // be an index. So if they click the center square, this will be `4`.
   function selectSquare(square) {
     
     if (winner !== null)
@@ -53,6 +46,7 @@ function Board() {
     setWinner(gotWinner);
     setStatus(calculateStatus(gotWinner, newSquares, next));
 
+    // interessante : we should update this with the "useEffect" and not on every click
     window.localStorage.setItem("tictactoe", JSON.stringify(newSquares));
   }
 
