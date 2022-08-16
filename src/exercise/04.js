@@ -59,17 +59,21 @@ function Board({squares, setSquares}) {
   )
 }
 
-function History() {
+function History({total, currentStep}) {
 
-  
+  const moves = [];
+  for(let i = 0; i < total; i++)
+  {
+    const destination = i === 0 ? "game start" : `move #${i}`;
+    const currentMove = i === currentStep ? "(current)" : "";
 
+    const stepName = `Go to ${destination} ${currentMove}`;
+    moves.push(<li><button disabled={i === currentStep}>{stepName}</button></li>);
+  }
 
   return (
     <ol>
-      <li><button>Move 1</button></li>
-      <li><button>Move 2</button></li>
-      <li><button>Move 3</button></li>
-      <li><button>Move 4</button></li>
+      {moves}
     </ol>
   );
 }
@@ -101,20 +105,21 @@ function Game() {
      });
    };
 
+
+
   const squares = history[step];     
   
   return (
     <React.Fragment>
       <div className="game">
-        <div className="game-board">
-          <p>Step:{step}</p>
+        <div className="game-board">          
           <Board squares={squares} setSquares={setSquares} />
           <button className="restart" onClick={restart}>
             restart
           </button>
         </div>
         <div>
-          <History step={step} />
+          <History total={history.length} currentStep={step} />
         </div>
       </div>
     </React.Fragment>
