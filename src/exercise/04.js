@@ -4,21 +4,12 @@
 import * as React from 'react'
 import {useLocalStorageState} from "../utils";
 
-function Board() {
-
-  const[squares, setSquares] = useLocalStorageState("tictactoe", Array(9).fill(null));  
-  
+function Board({squares, setSquares}) {
+   
   const nextPlayer = calculateNextValue(squares);
   const winner = calculateWinner(squares);  
   const status = calculateStatus(winner, squares, nextPlayer);
 
-  // 🐨 We'll need the following bits of derived state:
-  // - nextValue ('X' or 'O')
-  // - winner ('X', 'O', or null)
-  // - status (`Winner: ${winner}`, `Scratch: Cat's game`, or `Next player: ${nextValue}`)
-
-  // This is the function your square click handler will call. `square` should
-  // be an index. So if they click the center square, this will be `4`.
   function selectSquare(square) {
     
     if (winner !== null)
@@ -32,15 +23,9 @@ function Board() {
       console.log("This position is already filled");
       return;
     }
-
-    const newSquares = [...squares];
-    newSquares[square] = nextPlayer;
-    setSquares(newSquares);
-  }
-
-  function restart() {
-    const newSquares = Array(9).fill(null);
-    setSquares(newSquares);
+    
+    squares[square] = nextPlayer;
+    setSquares(squares);
   }
 
   function renderSquare(i) {
@@ -69,20 +54,70 @@ function Board() {
         {renderSquare(7)}
         {renderSquare(8)}
       </div>
-      <button className="restart" onClick={restart}>
-        restart
-      </button>
+
     </div>
   )
 }
 
-function Game() {
+function History() {
+
+  
+
+
   return (
-    <div className="game">
-      <div className="game-board">
-        <Board />
+    <ol>
+      <li><button>Move 1</button></li>
+      <li><button>Move 2</button></li>
+      <li><button>Move 3</button></li>
+      <li><button>Move 4</button></li>
+    </ol>
+  );
+}
+
+function Game() {
+
+  // const[squares, setSquares] = useLocalStorageState("tictactoe", Array(9).fill(null));
+  const initialState = Array(9).fill(null);
+
+  const[history, setHistory] = useLocalStorageState("ticTacToeHistory", [initialState]);
+  const[step, setStep] = useLocalStorageState("ticTacToeStep", 0);
+
+  function restart() {    
+    const resetHistory = [initialState];
+    setHistory(resetHistory);
+    setStep(0);
+  }
+
+  const setSquares = (squares) => { 
+    
+    const newHistory = [...history];
+    const newSquares = [...squares];
+
+    newHistory.push(newSquares);
+    setHistory(newHistory);
+    
+    setStep((currentStep) => { 
+      return currentStep + 1;    
+     });
+   };
+
+  const squares = history[step];     
+  
+  return (
+    <React.Fragment>
+      <div className="game">
+        <div className="game-board">
+          <p>Step:{step}</p>
+          <Board squares={squares} setSquares={setSquares} />
+          <button className="restart" onClick={restart}>
+            restart
+          </button>
+        </div>
+        <div>
+          <History step={step} />
+        </div>
       </div>
-    </div>
+    </React.Fragment>
   )
 }
 
