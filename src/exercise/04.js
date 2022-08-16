@@ -23,10 +23,9 @@ function Board({squares, setSquares}) {
       console.log("This position is already filled");
       return;
     }
-    
-    const newSquares = [...squares];
-    newSquares[square] = nextPlayer;
-    setSquares(newSquares);
+        
+    squares[square] = nextPlayer;
+    setSquares(squares);
   }
 
   function renderSquare(i) {
@@ -89,13 +88,13 @@ function History({total, currentStep, setIndex}) {
 
 function Game() {
   
-  //const initialState = Array(9).fill(null);
+  const initialState = Array(9).fill(null);
 
-  const[gameHistory, setGameHistory] = React.useState([Array(9).fill(null)]);
+  const[gameHistory, setGameHistory] = React.useState([initialState]);
   const[step, setStep] = React.useState(0);
 
   function restart() {    
-    const resetHistory = [Array(9).fill(null)];
+    const resetHistory = [initialState];
     setGameHistory(resetHistory);
     setStep(0);
   }
@@ -108,12 +107,15 @@ function Game() {
         
     const newSquares = [...squares];
 
-    const newGameHistory = [...gameHistory, newSquares];
-    // newGameHistory.push(newSquares);
-
-    setGameHistory(newGameHistory);
+    setGameHistory((currentHistory) => {
+      const newHistory = [...currentHistory];
+      newHistory.push(newSquares);
+      return newHistory;
+    });
     
-    setStep(step+1);
+    setStep((currentStep) => {
+      return currentStep + 1;
+    });
    };
 
    const setCurrentStep = (index) => { 
@@ -121,7 +123,8 @@ function Game() {
     };
 
 
-  const squares = gameHistory[step];     
+    // interessante : Do not forget to make a copy before passing it into the Board component.
+  const squares = [...gameHistory[step]];
   
   return (
     <React.Fragment>
