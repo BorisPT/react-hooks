@@ -128,9 +128,9 @@ function Game() {
      });
             
     };
-
-
-    // interessante : Do not forget to make a copy before passing it into the Board component.
+    
+    
+  // interessante : Do not forget to make a copy before passing it into the Board component.
   const squares = [...gameHistory[step]];
   
   return (
