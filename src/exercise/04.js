@@ -2,7 +2,7 @@
 // http://localhost:3000/isolated/exercise/04.js
 
 import * as React from 'react'
-// import {useLocalStorageState} from "../utils";
+import {useLocalStorageState} from "../utils";
 
 function Board({squares, setSquares}) {
    
@@ -90,8 +90,8 @@ function Game() {
   
   const initialState = Array(9).fill(null);
 
-  const[gameHistory, setGameHistory] = React.useState([initialState]);
-  const[step, setStep] = React.useState(0);
+  const[gameHistory, setGameHistory] = useLocalStorageState("JogoDoGaloHistory", [initialState]);
+  const[step, setStep] = useLocalStorageState("JogoDoGaloStep", 0);
 
   function restart() {    
     const resetHistory = [initialState];
