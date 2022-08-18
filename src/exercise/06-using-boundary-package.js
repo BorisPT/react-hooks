@@ -101,13 +101,9 @@ function App() {
       <hr />
       <div className="pokemon-info">
 
-      {/* 
-      // interessante : defining a "key" prop for the error boundary "resets" its error state so it after an error, 
-      // it is still possible to get a pokemon. 
-      // It must be unique, to provoke the unmount
-      */}
-
-      <ErrorBoundary FallbackComponent={FallBackComponent} >
+      {/* // interessante : using the error boundary package.
+      // Notice we use the same technique to reset the state (the "key" prop being unique, causes the unmount and mount of the component.) */}
+      <ErrorBoundary key={pokemonName} FallbackComponent={FallBackComponent} >
         <PokemonInfo pokemonName={pokemonName} />
       </ErrorBoundary>
       </div>

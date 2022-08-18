@@ -12,13 +12,14 @@ import { ErrorBoundary } from 'react-error-boundary';
 // interessante : define a fallback component, so we can pass to the error boundary and this way, 
 // anybody that wants to use the ErroBoundary has the flexibility to define which fallback to show in the 
 // case of an error.
-const FallBackComponent = ({error}) => { 
+const FallBackComponent = ({error, resetErrorBoundary}) => { 
 
   return (
     <React.Fragment>
       <div role="alert">
         There was an error: <pre style={{whiteSpace: 'normal'}}>{error}</pre>
       </div>          
+      <button type="button" onClick={resetErrorBoundary}>Try again</button>
     </React.Fragment>       
   );
 
@@ -94,14 +95,22 @@ function App() {
     setPokemonName(newPokemonName.trim())
   }
 
+  const resetErrorBoundary = () => { 
+
+    // interessante : trigger a render and clear the error state (?)
+    setPokemonName("");
+
+   };
+
   return (
     
     <div className="pokemon-info-app">
       <PokemonForm pokemonName={pokemonName} onSubmit={handleSubmit} />
       <hr />
       <div className="pokemon-info">
-
-      <ErrorBoundary FallbackComponent={FallBackComponent} >
+       
+      {/* <ErrorBoundary key={pokemonName} FallbackComponent={FallBackComponent} onReset={resetErrorBoundary}> */}
+      <ErrorBoundary FallbackComponent={FallBackComponent} onReset={resetErrorBoundary}>
         <PokemonInfo pokemonName={pokemonName} />
       </ErrorBoundary>
       </div>
