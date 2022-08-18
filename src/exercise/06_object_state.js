@@ -33,7 +33,9 @@ function createState(status, pokeInfo)
 function PokemonInfo({pokemonName}) {
 
   const [pokeState, setPokeState] = React.useState(createState(CONSTANTS.IDLE, null));
-  
+
+  // interessante : using "useRef" to preserve the error message between renders.
+  //In this case, we preserve the value we want into the "errorMessage.current" object
   let errorMessage = React.useRef(null);
 
   React.useEffect(() => { 

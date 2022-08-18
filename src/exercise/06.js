@@ -29,7 +29,13 @@ class MyErrorBoundary extends React.Component {
   render(){
     if (this.state.error !== null)
     {
-      return (<h1>We got an error, people!</h1>);
+      return (
+        <React.Fragment>
+          <h1>We got an error, people!</h1>
+          {this.props.children}
+        </React.Fragment> 
+      
+      );
     }
 
     // else, render whatever is inside this error boundary
@@ -108,7 +114,7 @@ function App() {
   }
 
   return (
-    <MyErrorBoundary>
+    <MyErrorBoundary key={pokemonName}>
     <div className="pokemon-info-app">
       <PokemonForm pokemonName={pokemonName} onSubmit={handleSubmit} />
       <hr />
