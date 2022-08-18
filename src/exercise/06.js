@@ -15,6 +15,7 @@ import { ErrorBoundary } from 'react-error-boundary';
 // Also, we define the parameters as the error we are passed from the boundary and the reset function that 
 // will trigger the reset of the boundary. Note that this function resets the boundary, but we must define the 
 // "onReset" prop of the boundary (which is a function) in order to clear the state of the component before the next render.
+// The name of the parameters is fixed.
 const FallBackComponent = ({error, resetErrorBoundary}) => { 
 
   return (
@@ -98,7 +99,7 @@ function App() {
     setPokemonName(newPokemonName.trim())
   }
 
-  const resetErrorBoundary = () => { 
+  const resetStateToAvoidError = () => { 
     // interessante : clear the state so we don't have a "fresh" error and allow the application to recover.
     setPokemonName("");
    };
@@ -116,7 +117,7 @@ function App() {
        // We define the interface of our callback to receive the function that resets the error boundary and also we define 
        // the "onReset" function to "clear" our state of errors. */}
       {/* <ErrorBoundary key={pokemonName} FallbackComponent={FallBackComponent} onReset={resetErrorBoundary}> */}
-      <ErrorBoundary FallbackComponent={FallBackComponent} onReset={resetErrorBoundary}>
+      <ErrorBoundary FallbackComponent={FallBackComponent} onReset={resetStateToAvoidError}>
         <PokemonInfo pokemonName={pokemonName} />
       </ErrorBoundary>
       </div>
