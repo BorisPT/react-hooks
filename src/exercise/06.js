@@ -11,26 +11,43 @@ import {PokemonDataView} from '../pokemon';
 import {PokemonInfoFallback} from "../pokemon";
 import {fetchPokemon} from "../pokemon";
 
+const ErrorComponent = ({errorMessage}) => { 
+
+  return (
+    <div role="alert">
+      There was an error: <pre style={{whiteSpace: 'normal'}}>{errorMessage}</pre>
+    </div>
+  );
+ };
+
 function PokemonInfo({pokemonName}) {
 
   const [pokemonInfo, setPokemonInfo] = React.useState(null);
+  const [error, setError] = React.useState(null);
 
   React.useEffect(() => { 
 
     const getPokemonInfo = async (pokeName) => { 
 
       setPokemonInfo(null);
+      setError(null);
 
       if (!pokeName)
       {        
         return;
       }      
 
-      const data = await fetchPokemon(pokeName);
-      console.log("Data:", data);
-      console.dir(data);
-      setPokemonInfo(data);
-    
+      try{
+        const data = await fetchPokemon(pokeName);
+        setPokemonInfo(data);
+      }
+      catch(error)
+      {
+        console.log("Error:", error);
+        console.log("Error.message:", error.message);
+
+        setError(error.message);
+      }
      }
 
      getPokemonInfo(pokemonName);
@@ -65,13 +82,15 @@ function PokemonInfo({pokemonName}) {
       content = <PokemonDataView pokemon={pokemonInfo} />;
     }
     else
-    {
-      content = <PokemonInfoFallback name={pokemonName} />;
+    {      
+      content = !error ? <PokemonInfoFallback name={pokemonName} /> : <ErrorComponent errorMessage={error} />;
     }
   }
   
   return (
-    content
+    <React.Fragment>
+        {content}
+    </React.Fragment>
     );
 }
 
@@ -79,7 +98,7 @@ function App() {
   const [pokemonName, setPokemonName] = React.useState('')
 
   function handleSubmit(newPokemonName) {
-    setPokemonName(newPokemonName)
+    setPokemonName(newPokemonName.trim())
   }
 
   return (
