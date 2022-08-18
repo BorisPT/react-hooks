@@ -97,7 +97,7 @@ function App() {
 
   const resetErrorBoundary = () => { 
 
-    // interessante : trigger a render and clear the error state (?)
+    // interessante : clear the state so we don't have a "fresh" error and allow the application to recover.
     setPokemonName("");
 
    };
