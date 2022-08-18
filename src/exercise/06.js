@@ -11,7 +11,10 @@ import { ErrorBoundary } from 'react-error-boundary';
 
 // interessante : define a fallback component, so we can pass to the error boundary and this way, 
 // anybody that wants to use the ErroBoundary has the flexibility to define which fallback to show in the 
-// case of an error.
+// case of an error. 
+// Also, we define the parameters as the error we are passed from the boundary and the reset function that 
+// will trigger the reset of the boundary. Note that this function resets the boundary, but we must define the 
+// "onReset" prop of the boundary (which is a function) in order to clear the state of the component before the next render.
 const FallBackComponent = ({error, resetErrorBoundary}) => { 
 
   return (
@@ -96,10 +99,8 @@ function App() {
   }
 
   const resetErrorBoundary = () => { 
-
     // interessante : clear the state so we don't have a "fresh" error and allow the application to recover.
     setPokemonName("");
-
    };
 
   return (
@@ -109,6 +110,11 @@ function App() {
       <hr />
       <div className="pokemon-info">
        
+       {/* // interessante : having the key is a nice "hack" to unmount the component, but in reality it will unmount and mount 
+       // not just the ErrorBoundary, but also the PokemonInfo component. This is not ideal, so we use another features of this 
+       // ErrorBoundary package.
+       // We define the interface of our callback to receive the function that resets the error boundary and also we define 
+       // the "onReset" function to "clear" our state of errors. */}
       {/* <ErrorBoundary key={pokemonName} FallbackComponent={FallBackComponent} onReset={resetErrorBoundary}> */}
       <ErrorBoundary FallbackComponent={FallBackComponent} onReset={resetErrorBoundary}>
         <PokemonInfo pokemonName={pokemonName} />
