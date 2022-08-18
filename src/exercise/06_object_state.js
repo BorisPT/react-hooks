@@ -8,34 +8,14 @@ import {PokemonInfoFallback} from "../pokemon";
 import {fetchPokemon} from "../pokemon";
 import { CONSTANTS } from './constants';
 
-// interessante : defining an error boundary
-class MyErrorBoundary extends React.Component {
+const ErrorComponent = ({errorMessage}) => { 
 
-  constructor(props) {
-    super(props);
-    this.state = {error : null};    
-  }
-
-  static getDerivedStateFromError(error){
-    // update the state so the next render will show the fallback ui
-    return {error : error};
-  }
-
-  componentDidCatch(error, errorInfo){
-    // we could log the error to an external service, for instance.
-    console.log("Error boundary: ", error, errorInfo);    
-  }
-
-  render(){
-    if (this.state.error !== null)
-    {
-      return (<h1>We got an error, people!</h1>);
-    }
-
-    // else, render whatever is inside this error boundary
-    return this.props.children;
-  }
-}
+  return (
+    <div role="alert">
+      There was an error: <pre style={{whiteSpace: 'normal'}}>{errorMessage}</pre>
+    </div>
+  );
+ };
 
 // idle: no request made yet
 // pending: request started
@@ -86,16 +66,12 @@ function PokemonInfo({pokemonName}) {
 
    }, [pokemonName]);
 
-   if (pokeState.status === CONSTANTS.REJECTED)
-   {
-    throw errorMessage.current;
-   }
-
   return (
     <React.Fragment>
       {pokeState.status === CONSTANTS.IDLE && <p>Please submit a pokemon</p>}
       {pokeState.status === CONSTANTS.PENDING && <PokemonInfoFallback name={pokemonName} />}
-      {pokeState.status === CONSTANTS.RESOLVED && <PokemonDataView pokemon={pokeState.pokemonInfo} />}      
+      {pokeState.status === CONSTANTS.RESOLVED && <PokemonDataView pokemon={pokeState.pokemonInfo} />}
+      {pokeState.status === CONSTANTS.REJECTED && <ErrorComponent errorMessage={errorMessage.current} />}
     </React.Fragment>
     );
 }
@@ -108,7 +84,6 @@ function App() {
   }
 
   return (
-    <MyErrorBoundary>
     <div className="pokemon-info-app">
       <PokemonForm pokemonName={pokemonName} onSubmit={handleSubmit} />
       <hr />
@@ -116,7 +91,6 @@ function App() {
         <PokemonInfo pokemonName={pokemonName} />
       </div>
     </div>
-    </MyErrorBoundary>
   )
 }
 
