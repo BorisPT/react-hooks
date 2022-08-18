@@ -7,22 +7,41 @@ import {PokemonDataView} from '../pokemon';
 import {PokemonInfoFallback} from "../pokemon";
 import {fetchPokemon} from "../pokemon";
 import { CONSTANTS } from './constants';
-import { ErrorBoundary } from 'react-error-boundary';
 
-// interessante : define a fallback component, so we can pass to the error boundary and this way, 
-// anybody that wants to use the ErroBoundary has the flexibility to define which fallback to show in the 
-// case of an error.
-const FallBackComponent = ({error}) => { 
+// interessante : defining an error boundary
+class MyErrorBoundary extends React.Component {
 
-  return (
-    <React.Fragment>
-      <div role="alert">
-        There was an error: <pre style={{whiteSpace: 'normal'}}>{error}</pre>
-      </div>          
-    </React.Fragment>       
-  );
+  constructor(props) {
+    super(props);
+    this.state = {error : null};    
+  }
 
- }
+  static getDerivedStateFromError(error){
+    // update the state so the next render will show the fallback ui
+    return {error : error};
+  }
+
+  componentDidCatch(error, errorInfo){
+    // we could log the error to an external service, for instance.
+    console.log("Error boundary: ", error, errorInfo);    
+  }
+
+  render(){
+    if (this.state.error !== null)
+    {
+      return (
+        <React.Fragment>
+          <h1>We got an error, people!</h1>
+          {this.props.children}
+        </React.Fragment> 
+      
+      );
+    }
+
+    // else, render whatever is inside this error boundary
+    return this.props.children;
+  }
+}
 
 // idle: no request made yet
 // pending: request started
@@ -95,18 +114,15 @@ function App() {
   }
 
   return (
-    
+    <MyErrorBoundary >
     <div className="pokemon-info-app">
       <PokemonForm pokemonName={pokemonName} onSubmit={handleSubmit} />
       <hr />
       <div className="pokemon-info">
-
-      <ErrorBoundary FallbackComponent={FallBackComponent} >
         <PokemonInfo pokemonName={pokemonName} />
-      </ErrorBoundary>
       </div>
     </div>
-    
+    </MyErrorBoundary>
   )
 }
 

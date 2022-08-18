@@ -7,7 +7,6 @@ import {PokemonDataView} from '../pokemon';
 import {PokemonInfoFallback} from "../pokemon";
 import {fetchPokemon} from "../pokemon";
 import { CONSTANTS } from './constants';
-import { ErrorBoundary } from 'react-error-boundary';
 
 // interessante : define a fallback component, so we can pass to the error boundary and this way, 
 // anybody that wants to use the ErroBoundary has the flexibility to define which fallback to show in the 
@@ -23,6 +22,39 @@ const FallBackComponent = ({error}) => {
   );
 
  }
+
+// interessante : defining an error boundary.
+// Try to be more granular so the error is related to the place where it originated, instead of applying it 
+// too high in the component tree.
+class MyErrorBoundary extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {error : null};    
+  }
+
+  static getDerivedStateFromError(error){
+    // update the state so the next render will show the fallback ui
+    return {error : error};
+  }
+
+  componentDidCatch(error, errorInfo){
+    // we could log the error to an external service, for instance.
+    console.log("Error boundary: ", error, errorInfo);    
+  }
+
+  render(){
+    if (this.state.error !== null)
+    {
+      return (
+        <this.props.FallBack error={this.state.error} /> 
+      );
+    }
+
+    // else, render whatever is inside this error boundary
+    return this.props.children;
+  }
+}
 
 // idle: no request made yet
 // pending: request started
@@ -101,9 +133,15 @@ function App() {
       <hr />
       <div className="pokemon-info">
 
-      <ErrorBoundary FallbackComponent={FallBackComponent} >
+      {/* 
+      // interessante : defining a "key" prop for the error boundary "resets" its error state so it after an error, 
+      // it is still possible to get a pokemon. 
+      // It must be unique, to provoke the unmount
+      */}
+
+      <MyErrorBoundary key={pokemonName} FallBack={FallBackComponent}>
         <PokemonInfo pokemonName={pokemonName} />
-      </ErrorBoundary>
+      </MyErrorBoundary>
       </div>
     </div>
     
