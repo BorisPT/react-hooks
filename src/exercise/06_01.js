@@ -22,17 +22,10 @@ const ErrorComponent = ({errorMessage}) => {
 // resolved: request successful
 // rejected: request failed
 
-function createState(status, pokeInfo)
-{
-  return {
-    status : status,
-    pokemonInfo : pokeInfo
-  };
-}
-
 function PokemonInfo({pokemonName}) {
 
-  const [pokeState, setPokeState] = React.useState(createState(CONSTANTS.IDLE, null));
+  const [pokemonInfo, setPokemonInfo] = React.useState(null);
+  const [status, setStatus] = React.useState(CONSTANTS.IDLE);
   
   let errorMessage = React.useRef(null);
 
@@ -40,22 +33,24 @@ function PokemonInfo({pokemonName}) {
 
     const getPokemonInfo = async (pokeName) => { 
 
-      setPokeState(createState(CONSTANTS.IDLE, null));
-      
+      setPokemonInfo(null);
+      setStatus(CONSTANTS.IDLE);      
+
       if (!pokeName)
       {        
         return;
       }      
 
       try{
-        
-        setPokeState(previousState => createState(CONSTANTS.PENDING, previousState.pokemonInfo));
+
+        setStatus(CONSTANTS.PENDING);
         const data = await fetchPokemon(pokeName);
-        setPokeState(createState(CONSTANTS.RESOLVED, data));
+        setPokemonInfo(data);
+        setStatus(CONSTANTS.RESOLVED);
       }
       catch(error)
       {
-        setPokeState(previousState => createState(CONSTANTS.REJECTED, previousState.pokemonInfo));        
+        setStatus(CONSTANTS.REJECTED);
         console.log("Error:", error);
         console.log("Error.message:", error.message);        
         errorMessage.current = error.message;
@@ -68,10 +63,10 @@ function PokemonInfo({pokemonName}) {
 
   return (
     <React.Fragment>
-      {pokeState.status === CONSTANTS.IDLE && <p>Please submit a pokemon</p>}
-      {pokeState.status === CONSTANTS.PENDING && <PokemonInfoFallback name={pokemonName} />}
-      {pokeState.status === CONSTANTS.RESOLVED && <PokemonDataView pokemon={pokeState.pokemonInfo} />}
-      {pokeState.status === CONSTANTS.REJECTED && <ErrorComponent errorMessage={errorMessage.current} />}
+      {status === CONSTANTS.IDLE && <p>Please submit a pokemon</p>}
+      {status === CONSTANTS.PENDING && <PokemonInfoFallback name={pokemonName} />}
+      {status === CONSTANTS.RESOLVED && <PokemonDataView pokemon={pokemonInfo} />}
+      {status === CONSTANTS.REJECTED && <ErrorComponent errorMessage={errorMessage.current} />}
     </React.Fragment>
     );
 }
